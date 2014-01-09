@@ -68,9 +68,9 @@ end
 
 def show_points hand
   if ace_in_hand? then
-    show = "#{evaluate_hand(hand)-10} or #{evaluate_hand(hand)}"
+    "#{evaluate_hand(hand)-10} or #{evaluate_hand(hand)}"
   else
-    show = "#{evaluate_hand(hand)}"
+    "#{evaluate_hand(hand)}"
   end    
 end
 
@@ -101,13 +101,19 @@ end
 def dealer_must_play?(hand)
   evaluate_hand(hand) < 17
 end
+
 def user_continues?(response)
-  if response.upcase = 'Y'
+  if response.upcase == 'Y'
     true
   else
     false
   end
 end
+
+def show_one_card(hand)
+  puts "#{hand[0][0]}#{hand[0][1]} ??"
+end
+
 game_over = false
 puts 'Welcome to Blackjack, what is your name?'
 user_name = gets.chomp
@@ -117,16 +123,19 @@ keep_playing = true
 while keep_playing
   users_hand = deal_hand(deck)
   dealers_hand = deal_hand(deck)
+  users_points = evaluate_hand(users_hand)
   dealers_points = evaluate_hand(dealers_hand)
+
   puts 'Your hand:'
   puts show_cards users_hand
   hand_just_dealt = true
   puts 'My hand:'
-  puts show_cards dealers_hand
+  puts show_one_card dealers_hand
   if is_blackjack?(users_hand)
     puts "#{user_name}, you win with blackjack"
     game_over = true
   end
+  puts "#{user_name}, your total is #{users_points}."
   user_continues = !is_blackjack?(users_hand)
   while user_continues do
     puts "#{user_name}, do you want to H)it or S)tay"
@@ -149,6 +158,7 @@ while keep_playing
       end
     when 'S'
       user_continues = false
+
    end
   end
   if !game_over
@@ -161,8 +171,8 @@ while keep_playing
     end
     if is_busted?(dealers_hand) && !is_busted?(users_hand)
       puts "#{user_name}, you win! I busted."
-    else    
-      if dealers_points >= users_points
+    else
+      if dealers_points >= users_points or is_blackjack?(dealers_hand)
         puts "I win, better luck next time, #{user_name}"
       else
         puts "#{user_name}, you win."
